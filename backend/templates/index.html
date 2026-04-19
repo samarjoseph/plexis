@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your SaaS</title>
+
+<style>
+
+/* ===== GLOBAL ===== */
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #000;
+  color: #e5e7eb;
+  overflow-x: hidden;
+}
+
+/* ===== AMBIENT LIGHT ===== */
+body::before {
+  content: "";
+  position: fixed;
+  top: -20%;
+  left: -20%;
+  width: 140%;
+  height: 140%;
+  pointer-events: none;
+  z-index: 0;
+
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255,255,255,0.06), transparent 60%),
+    radial-gradient(circle at 80% 80%, rgba(168,85,247,0.08), transparent 60%);
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  bottom: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120%;
+  height: 120px;
+  pointer-events: none;
+
+  background: radial-gradient(
+    ellipse at bottom,
+    rgba(255,255,255,0.08),
+    rgba(168,85,247,0.08),
+    transparent 70%
+  );
+
+  filter: blur(40px);
+}
+
+section {
+  position: relative;
+  z-index: 1;
+}
+
+/* ===== NAV ===== */
+.nav {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px 40px;
+  border-bottom: 1px solid #111;
+}
+
+.logo {
+  font-weight: bold;
+  color: #c084fc;
+}
+
+.nav button {
+  background: #0a0a0a;
+  border: 1px solid rgba(168,85,247,0.5);
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* ===== HERO ===== */
+.hero {
+  text-align: center;
+  padding: 120px 20px 80px;
+}
+
+.hero h1 {
+  font-size: 42px;
+  max-width: 700px;
+  margin: auto;
+  line-height: 1.3;
+
+  background: linear-gradient(90deg,#fff,#c084fc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero p {
+  color: #9ca3af;
+  margin-top: 15px;
+}
+
+.cta {
+  margin-top: 25px;
+  padding: 12px 20px;
+  color:rgb(216, 213, 213);
+  border-radius: 10px;
+  background: #0a0a0a;
+  border: 1px solid rgba(168,85,247,0.5);
+  cursor: pointer;
+
+  box-shadow: 0 0 15px rgba(168,85,247,0.3);
+}
+
+.cta:hover {
+  box-shadow: 0 0 30px rgba(168,85,247,0.7);
+}
+
+/* ===== FEATURES ===== */
+.features {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  padding: 60px 20px;
+  flex-wrap: wrap;
+}
+
+.feature {
+  background: #0a0a0a;
+  padding: 20px;
+  width: 220px;
+  border-radius: 15px;
+  border: 1px solid rgba(168,85,247,0.3);
+
+  text-align: center;
+
+  box-shadow: 0 0 15px rgba(168,85,247,0.2);
+  transition: 0.3s;
+}
+
+.feature:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 0 25px rgba(168,85,247,0.6);
+}
+
+/* ===== FINAL CTA ===== */
+.final {
+  text-align: center;
+  padding: 80px 20px;
+}
+
+.final h2 {
+  font-size: 28px;
+
+}
+
+.final button {
+  margin-top: 20px;
+  padding: 12px 20px;
+  border-radius: 10px;
+  color:rgb(226, 226, 226);
+  border: 1px solid rgba(168,85,247,0.5);
+  background: #0a0a0a;
+  cursor: pointer;
+}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:768px){
+  .hero h1 { font-size: 28px; }
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- NAV -->
+<div class="nav">
+  <div class="logo">Plexis</div>
+  <button onclick="location.href='/'">Login</button>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <h1>Manage Clients & Invoices Like a Pro — Without Stress</h1>
+  <p>Simple. Fast. Powerful. Built for people who want results.</p>
+  <button class="cta" onclick="location.href='/register'">Get Started Free</button>
+</section>
+
+<!-- FEATURES -->
+<section class="features">
+
+  <div class="feature">
+    <h3>⚡ Fast</h3>
+    <p>Create invoices in seconds</p>
+  </div>
+
+  <div class="feature">
+    <h3>📊 Smart</h3>
+    <p>Track clients & payments easily</p>
+  </div>
+
+  <div class="feature">
+    <h3>📩 Auto Send</h3>
+    <p>Email invoices instantly</p>
+  </div>
+
+</section>
+
+<!-- FINAL CTA -->
+<section class="final">
+  <h2>Start managing your business smarter today</h2>
+  <button onclick="location.href='/register'">Create Free Account</button>
+</section>
+
+</body>
+</html>

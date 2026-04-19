@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+margin:0;
+font-family:Arial;
+background:linear-gradient(135deg,#020617,#000,#020617);
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+color:white;
+}
+
+/* CARD */
+.card{
+background:#020617;
+padding:35px;
+border-radius:20px;
+width:340px;
+border:2px solid white;
+box-shadow:0 0 40px #af80d5;
+transition:0.3s;
+}
+
+.card:hover{
+transform:scale(1.02);
+box-shadow:0 0 70px #af80d5;
+}
+
+h2{text-align:center;}
+
+/* INPUT */
+.input-box{
+position:relative;
+margin-top:15px;
+}
+
+.input-box input{
+width:100%;
+padding:12px;
+border:none;
+outline:none;
+border-radius:10px;
+background:#0f172a;
+color:white;
+transition:0.3s;
+}
+
+/* GLOW ON FOCUS */
+.input-box input:focus{
+box-shadow:0 0 10px #af80d5;
+}
+
+/* BUTTON */
+button{
+width:100%;
+margin-top:20px;
+padding:12px;
+background:#af80d5;
+border:none;
+border-radius:10px;
+color:white;
+cursor:pointer;
+transition:0.3s;
+box-shadow:0 0 10px #dbdbdb;
+}
+
+button:hover{
+transform:scale(1.05);
+box-shadow:0 0 25px white;
+}
+
+/* LINK */
+.link{
+text-align:center;
+margin-top:15px;
+}
+.link a{color:#af80d5;}
+
+@media(max-width:400px){
+.card{width:90%;}
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+<h2>Create Account</h2>
+
+<form method="POST">
+
+<div class="input-box">
+<input name="name" placeholder="Username" required>
+</div>
+
+<div class="input-box">
+<input name="email" placeholder="Email" required>
+</div>
+
+<div class="input-box">
+<input type="password" name="password" placeholder="Password" required>
+</div>
+
+<button>Create Account</button>
+
+</form>
+
+<div class="link">
+<a href="/">Already have account? Login</a>
+</div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<style>
+body {
+    background: linear-gradient(135deg,#0f172a,#1e3a8a);
+    color: white;
+    display: flex;
+    justify-content: center;
+    gap: 60px;
+    padding-top: 100px;
+    font-family: Arial, sans-serif;
+}
+
+/* CARD */
+.card {
+    background: #020617;
+    padding: 20px;
+    border-radius: 20px;
+    width: 150px;
+    height: 270px;
+    border: 2px solid white;
+    box-shadow: 0px 0px 30px #ff6e6e;
+    text-align: center;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+/* CARD HOVER 🔥 */
+.card:hover {
+    transform: translateY(-10px) scale(1.05);
+    box-shadow: 0px 0px 60px #ff6e6e;
+}
+
+/* BUTTON */
+.btn {
+    border: 2px solid white;
+    background-color: #af80d5;
+    box-shadow: 0px 0px 10px #dbdbdb;
+    border-radius: 7px;
+    padding: 6px 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* BUTTON HOVER */
+.btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0px 0px 20px #ffffff;
+    background-color: #c89df0;
+}
+
+/* CURRENT PLAN BUTTON */
+.current {
+    background: grey;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* BADGE */
+.badge {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background: #ff6e6e;
+    color: white;
+    padding: 5px 8px;
+    font-size: 10px;
+    border-radius: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+<h3>Free</h3>
+<p>6 invoices/month</p>
+<p>6 clients/month</p>
+<button class="btn current">Current Plan</button>
+</div>
+
+<div class="card">
+
+<h3>Plus ($50)</h3>
+<p>15 invoices/month</p>
+<p>15 clients/month</p>
+<a href="/upgrade/plus">
+<button class="btn">Upgrade</button>
+</a>
+</div>
+
+<div class="card">
+    <div class="badge">POPULAR</div>
+<h3>Pro ($100)</h3>
+<p>Unlimited invoices</p>
+<p>Unlimited clients list</p>
+<a href="/upgrade/pro">
+<button class="btn">Upgrade</button>
+</a>
+</div>
+
+</body>
+</html>

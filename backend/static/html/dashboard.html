@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard</title>
+<style>
+/* ===== GLOBAL ===== */
+body {
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg,#0f172a,#1e3a8a);
+    color: #fff;
+}
+
+/* ===== TOP BAR ===== */
+.top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    flex-wrap: wrap;
+    gap: 15px;
+    background: rgba(2,6,23,0.85);
+    border-bottom: 1px solid #4c1d95;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+
+.box {
+    flex: 1;
+    min-width: 120px;
+    text-align: center;
+    background: linear-gradient(135deg,#1e3a8a,#0f172a);
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid #af80d5;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 10px rgba(175,128,213,0.3);
+    font-weight: bold;
+}
+
+.box:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 0 25px #af80d5, 0 0 50px #c79cf0;
+}
+
+/* ===== STATS BOX ===== */
+.stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 30px 20px;
+    justify-content: center;
+}
+
+.stat-box {
+    flex: 1;
+    min-width: 220px;
+    background: rgba(2,6,23,0.7);
+    padding: 30px 20px;
+    border-radius: 15px;
+    border: 1px solid #af80d5;
+    box-shadow: 0 0 15px rgba(175,128,213,0.3);
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.stat-box h3 {
+    color: #94a3b8;
+    margin-bottom: 15px;
+    font-weight: 500;
+}
+
+.stat-box p {
+    font-size: 32px;
+    font-weight: bold;
+    color: #af80d5;
+}
+
+.stat-box:hover {
+    transform: translateY(-8px) scale(1.05);
+    box-shadow: 0 0 30px #af80d5, 0 0 50px #c79cf0;
+}
+
+/* ===== ADD PROJECT FORM ===== */
+.form {
+    padding: 20px;
+    max-width: 900px;
+    margin: auto;
+}
+
+form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(200px,1fr));
+    gap: 55px;
+}
+
+input, select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #334155;
+    background: rgba(2,6,23,0.85);
+    color: white;
+    outline: none;
+    transition: 0.3s;
+}
+
+input:focus, select:focus {
+    border-color: #af80d5;
+    box-shadow: 0 0 10px #af80d5;
+}
+
+/* ===== ADD BUTTON ===== */
+.add-btn {
+    padding: 12px 25px;
+    background: #af80d5;
+    border: none;
+    border-radius: 12px;
+    border:2px solid rgb(245, 245, 245);
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
+    justify-self: center;
+    min-width: 150px;
+    box-shadow: 0px 0px 10px white;
+}
+
+.add-btn:hover {
+    background: #c79cf0;
+    box-shadow: 0 0 20px #af80d5, 0 0 40px #c79cf0;
+    transform: scale(1.08);
+    border:none;
+}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:768px){
+    .stats { flex-direction: column; align-items: center; }
+    .top { flex-direction: column; gap: 10px; }
+    form { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="top">
+    <div class="box" onclick="location.href='/clients'">Clients</div>
+    <div class="box" onclick="location.href='/plans'">Plan: {{ user.plan }}</div>
+    <div class="box" onclick="location.href='/logout'">Logout</div>
+</div>
+
+<!-- STATS -->
+<div class="stats">
+    <div class="stat-box">
+        <h3>Total Clients</h3>
+        <p>{{ total_clients }}</p>
+    </div>
+    <div class="stat-box">
+        <h3>Pending Projects</h3>
+        <p>{{ pending_projects }}</p>
+    </div>
+    <div class="stat-box">
+        <h3>Pending Amount</h3>
+        <p>{{ pending_amount }}</p>
+    </div>
+</div>
+
+<!-- ADD PROJECT FORM -->
+<div class="form">
+    <form method="POST" action="/add_project">
+        <input name="client_name" placeholder="Client Name" required>
+        <input name="email" placeholder="Client Email" required>
+        <input name="title" placeholder="Project Title" required>
+        <input name="amount" placeholder="Amount" required>
+        <select name="currency">
+            <option value="$">$ Dollar (USD)</option>
+            <option value="₹">₹ Rupee (INR)</option>
+            <option value="€">€ Euro (EUR)</option>
+            <option value="د.إ">د.إ Dirham (AED)</option>
+        </select>
+        <button class="add-btn">Add Project</button>
+    </form>
+</div>
+
+</body>
+</html>

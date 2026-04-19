@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <style>
+        :root {
+            --neon: #a855f7;
+            --neon-soft: rgba(168, 85, 247, 0.4);
+        }
+
+        /* ===== GLOBAL ===== */
+        body {
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+
+            background: radial-gradient(circle at top, #0a0a0f, #050507 70%),
+                radial-gradient(circle at bottom right, rgba(168, 85, 247, 0.15), transparent 60%);
+
+            color: #e5e7eb;
+        }
+
+        /* ===== TOP BAR ===== */
+        .top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+
+            box-shadow: 0 0 25px rgba(168, 85, 247, 0.15);
+
+
+            background: rgba(10, 10, 15, 0.6);
+            backdrop-filter: blur(12px);
+
+            border-bottom: 1px solid rgba(168, 85, 247, 0.2);
+
+        }
+
+        .box {
+            background: rgba(20, 20, 25, 0.6);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+
+            box-shadow: 0 0 8px rgba(168, 85, 247, 0.15);
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
+
+
+            padding: 14px;
+            border-radius: 10px;
+
+
+            cursor: pointer;
+
+            transition: all 0.25s ease;
+            font-weight: 500;
+        }
+
+        .box:hover {
+            transform: translateY(-3px);
+            border-color: #a855f7;
+            box-shadow: 0 0 12px #a855f7;
+        }
+
+        .stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 30px 20px;
+
+            justify-content: center;
+            /* center boxes */
+        }
+
+        /* ===== STATS BOX ===== */
+        .stat-box {
+
+            flex: 1;
+            min-width: 225px;
+            background: rgba(15, 15, 20, 0.75);
+            padding: 25px;
+            border-radius: 14px;
+
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            backdrop-filter: blur(10px);
+
+            text-align: center;
+            transition: 0.3s;
+
+            box-shadow: inset 0 0 10px rgba(168, 85, 247, 0.05);
+        }
+
+        .stat-box:hover {
+            transform: translateY(-5px);
+            box-shadow:
+                0 0 15px rgba(168, 85, 247, 0.4),
+                0 0 40px rgba(168, 85, 247, 0.2);
+        }
+
+        /* ===== ADD PROJECT FORM ===== */
+        .form {
+            padding: 20px;
+            max-width: 900px;
+            margin: auto;
+        }
+
+        form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 55px;
+        }
+
+        .cancel-btn {
+            display: block;
+            margin: 20px auto;
+
+            background: transparent;
+            border: 1px solid rgba(255, 77, 77, 0.5);
+            color: #ff4d4d;
+
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+
+            transition: 0.25s;
+        }
+
+        .cancel-btn:hover {
+            background: #ff4d4d;
+            color: white;
+            box-shadow: 0 0 10px #ff4d4d;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 12px;
+
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+
+            background: rgba(20, 20, 25, 0.8);
+            color: #e5e7eb;
+
+            outline: none;
+            transition: 0.25s;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: var(--neon);
+            box-shadow: 0 0 10px var(--neon-soft);
+
+
+        }
+
+        .flash-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        .flash {
+            background: #111;
+            color: #fff;
+            padding: 12px 18px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            font-size: 14px;
+            border: 1px solid rgb(160, 160, 160);
+
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            animation: slideIn 0.3s ease;
+        }
+
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+
+            display: none;
+            /* ❗ IMPORTANT */
+            align-items: center;
+            justify-content: center;
+
+            background: rgba(10, 10, 20, 0.6);
+            backdrop-filter: blur(8px);
+
+            z-index: 99999;
+            /* 🔥 above everything */
+        }
+
+        .popup-overlay.active {
+            display: flex;
+        }
+
+        .popup-box {
+            background: linear-gradient(145deg, #0f172a, #020617);
+            border: 1px solid #00f0ff;
+            padding: 25px;
+            border-radius: 12px;
+            width: 300px;
+            text-align: center;
+
+            box-shadow: 0 0 20px #00f0ff;
+        }
+
+        .popup-overlay.active .popup-box {
+            transform: scale(1);
+        }
+
+        .popup-box h3 {
+            color: #fff;
+        }
+
+        .popup-box p {
+            color: #aaa;
+            font-size: 14px;
+        }
+
+        .popup-actions {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .danger {
+            background: #ff4d4d;
+            border: none;
+            padding: 8px 12px;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .safe {
+            background: transparent;
+            border: 1px solid #555;
+            color: #ccc;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+            }
+
+            to {
+                transform: translateX(0);
+            }
+        }
+      /* ===== OVERDUE POPUP FIX ===== */
+
+.popup-box.overdue-popup {
+    max-height: 80vh; /* limit height */
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* scroll only content */
+#overdueContainer {
+    overflow-y: auto;
+    max-height: 60vh;
+    padding-right: 5px;
+}
+
+/* scrollbar styling (dark theme) */
+#overdueContainer::-webkit-scrollbar {
+    width: 6px;
+}
+
+#overdueContainer::-webkit-scrollbar-track {
+    background: #050505;
+}
+
+#overdueContainer::-webkit-scrollbar-thumb {
+    background: rgba(168, 85, 247, 0.4);
+    border-radius: 10px;
+}
+
+#overdueContainer::-webkit-scrollbar-thumb:hover {
+    background: rgba(168, 85, 247, 0.7);
+}
+        /* ===== BOTTOM EDGE GLOW ===== */
+
+        body::after {
+            content: "";
+            position: fixed;
+            bottom: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+
+            width: 120%;
+            height: 120px;
+
+            pointer-events: none;
+            z-index: 0;
+
+            background: radial-gradient(ellipse at bottom,
+                    rgba(255, 255, 255, 0.08),
+                    rgba(168, 85, 247, 0.08) 40%,
+                    transparent 70%);
+
+            filter: blur(35px);
+        }
+
+       .overdue-item {
+    background: #0a0a0a;
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 10px;
+} /* ===== ADD BUTTON ===== */
+        .add-btn {
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #9333ea, #6d28d9);
+
+            border: none;
+            border-radius: 10px;
+            color: white;
+
+            cursor: pointer;
+            font-weight: 600;
+
+            transition: 0.3s;
+
+            box-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
+        }
+
+        .add-btn:hover {
+            transform: scale(1.05);
+            box-shadow:
+                0 0 20px #a855f7,
+                0 0 40px rgba(168, 85, 247, 0.6);
+        }
+
+        .overdue-popup {
+            max-width: 350px;
+            background: linear-gradient(135deg, #2b0000, #140000);
+            border: 1px solid rgba(255, 0, 0, 0.5);
+
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.4);
+        }
+
+        .overdue-item {
+            background: rgba(255, 0, 0, 0.08);
+            border: 1px solid rgba(255, 0, 0, 0.3);
+
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 10px;
+
+            color: #ff6b6b;
+        }
+
+        .dismiss-btn {
+            text-decoration: none;
+            color: white;
+            font-size: 13px;
+
+            border: 1px solid #ff4d4d;
+            padding: 5px 10px;
+            border-radius: 5px;
+
+            display: inline-block;
+        }
+
+        .dismiss-btn:hover {
+            background: #ff4d4d;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media(max-width:768px) {
+
+            .top {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .box {
+                width: 100%;
+            }
+
+
+            .stats {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .stat-box {
+                width: 90%;
+                /* not full ugly width */
+            }
+
+            form {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div class="flash-container">
+        {% for message in messages %}
+        <div class="flash">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+ <div id="overduePopup" class="popup-overlay" style="display:none;">
+    <div class="popup-box overdue-popup">
+
+        <h3>⚠️ Overdue Projects</h3>
+
+        <div id="overdueContainer"></div>
+
+        <button id="closeOverdue" class="safe" style="margin-top:15px;">
+            Close
+        </button>
+
+    </div>
+</div>
+
+    <!-- TOP BAR -->
+    <div class="top">
+        <div class="box" onclick="location.href='/clients'">Clients</div>
+        <div class="box" onclick="location.href='/plans'">Plan: {{ user.plan }}</div>
+        <div class="box" onclick="location.href='/logout'">Logout</div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats">
+        <div class="stat-box">
+            <h3>Total Clients</h3>
+            <p>{{ total_clients }}</p>
+        </div>
+        <div class="stat-box">
+            <h3>Pending Projects</h3>
+            <p>{{ pending_projects }}</p>
+        </div>
+        <div class="stat-box">
+            <h3>Pending Amount</h3>
+            <p>{{ pending_amount }}</p>
+        </div>
+    </div>
+
+    <!-- ADD PROJECT FORM -->
+    <div class="form">
+        <form method="POST" action="/add_project">
+            <input name="client_name" placeholder="Client Name" required>
+            <input name="email" placeholder="Client Email" required>
+            <input name="title" placeholder="Project Title" required>
+            <input name="amount" placeholder="Amount" required>
+            <select name="currency">
+                <option value="$">$ Dollar (USD)</option>
+                <option value="₹">₹ Rupee (INR)</option>
+                <option value="€">€ Euro (EUR)</option>
+                <option value="د.إ">د.إ Dirham (AED)</option>
+            </select>
+            <button class="add-btn">Add Project</button>
+        </form>
+    </div>
+
+
+    <button id="cancelBtn" class="cancel-btn">
+        Cancel Subscription
+    </button>
+
+
+    <div id="cancelPopup" class="popup-overlay">
+        <div class="popup-box">
+            <h3>Cancel Subscription?</h3>
+            <p>You will lose advanced features immediately,and also will need to follow limitations.</p>
+
+            <div class="popup-actions">
+                <button id="confirmCancel" class="danger">Yes, Cancel</button>
+                <button id="closePopup" class="safe">Keep Plan</button>
+            </div>
+        </div>
+    </div>
+<script>
+
+// ================= FLASH =================
+setTimeout(() => {
+    document.querySelectorAll('.flash').forEach(el => {
+        el.style.transition = "opacity 0.5s ease";
+        el.style.opacity = "0";
+
+        setTimeout(() => {
+            el.remove();
+        }, 500);
+    });
+}, 4000);
+
+
+// ================= CANCEL POPUP =================
+const cancelBtn = document.getElementById("cancelBtn");
+const cancelPopup = document.getElementById("cancelPopup");
+const closePopupBtn = document.getElementById("closePopup");
+const confirmCancel = document.getElementById("confirmCancel");
+
+if (cancelBtn && cancelPopup) {
+    cancelBtn.onclick = () => cancelPopup.classList.add("active");
+}
+
+if (closePopupBtn && cancelPopup) {
+    closePopupBtn.onclick = () => cancelPopup.classList.remove("active");
+}
+
+if (confirmCancel) {
+    confirmCancel.onclick = () => {
+        window.location.href = "/cancel_subscription";
+    };
+}
+
+
+// ================= OVERDUE SYSTEM =================
+const overduePopup = document.getElementById("overduePopup");
+const overdueContainer = document.getElementById("overdueContainer");
+const closeOverdueBtn = document.getElementById("closeOverdue");
+
+// close button
+if (closeOverdueBtn && overduePopup) {
+    closeOverdueBtn.onclick = () => {
+        overduePopup.style.display = "none";
+    };
+}
+
+// fetch + render
+async function loadOverdue() {
+    try {
+        const res = await fetch("/get_overdue");
+        const result = await res.json();
+
+        if (!overdueContainer || !overduePopup) return;
+
+        // ❌ no data → hide popup
+        if (!result.data || result.data.length === 0) {
+            overduePopup.style.display = "none";
+            return;
+        }
+
+        // ✅ show popup
+        overduePopup.style.display = "flex";
+
+        // clear old content
+        overdueContainer.innerHTML = "";
+
+        // render data
+        result.data.forEach(p => {
+            overdueContainer.innerHTML += `
+                <div class="overdue-item">
+                    <b>👤 ${p.client_name}</b><br>
+                    📧 ${p.client_email}<br>
+                    📁 ${p.project_title}<br>
+                    💰 ${p.currency} ${p.amount}<br>
+                    📩 ${p.email_sent ? "Email sent ✅" : "Email not sent ❌"}
+
+                    <div style="margin-top:10px;">
+                        <a href="/dismiss_overdue/${p.id}" class="dismiss-btn">
+                            Dismiss
+                        </a>
+                    </div>
+                </div>
+            `;
+        });
+
+    } catch (e) {
+        console.log("Overdue error:", e);
+    }
+}
+
+// first load
+loadOverdue();
+
+// refresh every 5 sec
+setInterval(loadOverdue, 5000);
+
+</script>
+
+</body>
+
+</html>

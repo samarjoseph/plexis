@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clients</title>
+<style>
+/* ===== GLOBAL ===== */
+body {
+  margin: 0;
+  font-family: 'Arial', sans-serif;
+  background: linear-gradient(135deg,#0f172a,#1e3a8a);
+  color: #fff;
+}
+
+a { text-decoration: none; color: inherit; }
+
+/* ===== TOP BAR ===== */
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+  background: rgba(2,6,23,0.8);
+  border-bottom: 1px solid #4c1d95;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+
+.box {
+  background: linear-gradient(135deg,#1e3a8a,#0f172a);
+  padding: 10px 18px;
+  border-radius: 12px;
+  border: 1px solid #af80d5;
+  cursor: pointer;
+  transition: 0.3s;
+  box-shadow: 0 0 12px #af80d5;
+  font-weight: bold;
+}
+
+.box:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 25px #af80d5;
+}
+
+/* ===== TABLE WRAPPER ===== */
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  padding: 20px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px;
+  background: rgba(2,6,23,0.7);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(175,128,213,0.3);
+}
+
+th, td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #4c1d95;
+  text-align: left;
+  white-space: nowrap;
+}
+
+th {
+  background: rgba(2,6,23,0.9);
+  color: #af80d5;
+  font-weight: 600;
+}
+
+/* ===== DOT MENU ===== */
+.dots {
+  cursor: pointer;
+  font-size: 18px;
+  user-select: none;
+}
+
+.menu {
+  display: none;
+  position: fixed;
+  background: linear-gradient(180deg,#020617,#1e1e3a);
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.7);
+  z-index: 1000;
+  min-width: 140px;
+  border: 1px solid #af80d5;
+}
+
+.menu a {
+  display: block;
+  padding: 10px 15px;
+  color: #fff;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+.menu a:hover {
+  background: rgba(175,128,213,0.2);
+  color: #af80d5;
+}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:768px){
+  th, td { padding: 10px; }
+}
+
+@media(max-width:480px){
+  .top { flex-direction: column; gap: 10px; }
+  table { min-width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="box" onclick="location.href='/dashboard'">Dashboard</div>
+  <div class="box" onclick="location.href='/logout'">Logout</div>
+</div>
+
+<div class="table-wrapper">
+  <table>
+    <tr>
+      <th>Client</th>
+      <th>Project</th>
+      <th>Amount</th>
+      <th>Status</th>
+      <th>Date</th>
+      <th></th>
+    </tr>
+    {% for p in projects %}
+    <tr>
+      <td>{{ p.client_name }}</td>
+      <td>{{ p.title }}</td>
+      <td>{{ p.currency }} {{ p.amount }}</td>
+      <td>{{ p.status }}</td>
+      <td>{{ p.date }}</td>
+      <td style="position: relative;">
+        <span class="dots" onclick="toggleMenu({{p.id}}, this)">⋮</span>
+        <div id="m{{p.id}}" class="menu">
+          <a href="/edit/{{p.id}}">Update</a>
+          <a href="/mark_paid/{{p.id}}">Mark Paid</a>
+          <a href="/delete_project/{{p.id}}">Delete</a>
+          <a href="/download_pdf/{{p.id}}">PDF</a>
+        </div>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+
+<script>
+// Toggle menu visibility
+function toggleMenu(id, el){
+  document.querySelectorAll(".menu").forEach(m=>m.style.display="none");
+
+  const menuDiv = document.getElementById("m"+id);
+  menuDiv.style.display="block";
+
+  const rect = el.getBoundingClientRect();
+  const menuWidth = menuDiv.offsetWidth;
+  const menuHeight = menuDiv.offsetHeight;
+  const padding = 10;
+
+  let topPos = rect.bottom + window.scrollY;
+  let leftPos = rect.left + window.scrollX;
+
+  if(leftPos + menuWidth + padding > window.innerWidth){
+    leftPos = window.innerWidth - menuWidth - padding;
+  }
+  if(leftPos < padding) leftPos = padding;
+
+  if(topPos + menuHeight + padding > window.innerHeight + window.scrollY){
+    topPos = rect.top - menuHeight + window.scrollY;
+  }
+
+  menuDiv.style.left = leftPos + "px";
+  menuDiv.style.top = topPos + "px";
+}
+
+// Hide menus on click outside
+document.addEventListener("click", (e) => {
+  if(!e.target.classList.contains("dots")){
+    document.querySelectorAll(".menu").forEach(m=>m.style.display="none");
+  }
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial;
+}
+
+body{
+min-height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+background:linear-gradient(135deg,#020617,#000,#020617);
+color:white;
+padding:15px;
+}
+
+.card{
+background:#020617;
+padding:30px;
+border-radius:20px;
+width:100%;
+max-width:360px;
+border:1px solid #334155;
+box-shadow:0 0 30px rgba(175,128,213,0.4);
+}
+
+h2{
+text-align:center;
+margin-bottom:10px;
+color:#af80d5;
+}
+
+.sub{
+text-align:center;
+font-size:13px;
+color:#94a3b8;
+margin-bottom:15px;
+}
+
+.flash{
+background:#ef4444;
+padding:10px;
+border-radius:8px;
+margin-bottom:10px;
+text-align:center;
+}
+
+input{
+width:100%;
+padding:12px;
+margin-top:15px;
+border-radius:10px;
+border:none;
+background:#0f172a;
+color:white;
+}
+
+button{
+width:100%;
+margin-top:20px;
+padding:12px;
+background:#af80d5;
+border:none;
+border-radius:10px;
+color:white;
+cursor:pointer;
+font-weight:bold;
+}
+.flash-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+}
+
+.flash {
+    background: #111;
+    color: #fff;
+    padding: 12px 18px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    font-size: 14px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+}
+.link{
+text-align:center;
+margin-top:15px;
+}
+
+.link a{
+color:#af80d5;
+text-decoration:none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+<h2>Forgot Password</h2>
+<p class="sub">Enter your email to receive a reset code</p>
+
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<div class="flash">
+{{ messages[0] }}
+</div>
+{% endif %}
+{% endwith %}
+
+<form method="POST">
+
+<input type="email" name="email" placeholder="Enter your email" required>
+
+<button type="submit">Send Reset Code</button>
+
+</form>
+
+<div class="link">
+<a href="/">Back to Login</a>
+</div>
+
+</div>
+<script>
+setTimeout(() => {
+    document.querySelectorAll('.flash').forEach(el => {
+        el.style.transition = "opacity 0.5s ease";
+        el.style.opacity = "0";
+
+        setTimeout(() => {
+            el.remove();
+        }, 500);
+    });
+}, 2000); // ⏱️ stays for 2 seconds
+</script>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+margin:0;
+background:linear-gradient(135deg,#020617,#000);
+color:white;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+font-family:Arial;
+}
+
+.card{
+background:#020617;
+padding:30px;
+border-radius:20px;
+width:340px;
+border:2px solid white;
+box-shadow:0 0 40px #af80d5;
+text-align:center;
+}
+
+/* PLAN BOX */
+.plan{
+background:#0f172a;
+padding:15px;
+border-radius:10px;
+margin-bottom:15px;
+}
+
+/* PAYMENT OPTIONS */
+.methods{
+margin-top:15px;
+text-align:left;
+}
+
+.methods div{
+padding:10px;
+background:#0f172a;
+margin-top:8px;
+border-radius:8px;
+cursor:pointer;
+transition:0.3s;
+}
+
+.methods div:hover{
+background:#1e293b;
+}
+
+/* BUTTON */
+button{
+margin-top:15px;
+width:100%;
+padding:12px;
+background:#af80d5;
+border:none;
+border-radius:10px;
+cursor:pointer;
+transition:0.3s;
+}
+
+button:hover{
+transform:scale(1.05);
+box-shadow:0 0 20px white;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+<h2>Payment</h2>
+
+<div class="plan">
+<h3>{{plan.upper()}} PLAN</h3>
+<p>Price: {{price}}</p>
+</div>
+
+<div class="methods">
+<div>💳 Credit / Debit Card</div>
+<div>📱 UPI</div>
+<div>📷 QR Code</div>
+</div>
+
+<form method="POST">
+<button>Pay Now</button>
+</form>
+
+</div>
+
+</body>
+</html>

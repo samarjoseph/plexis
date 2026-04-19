@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clients</title>
+  <style>
+    /* ===== GLOBAL ===== */
+    * {
+      box-sizing: border-box;
+    }
+
+    /* ===== SOFT WHITE AMBIENT GLOW ===== */
+
+    /* subtle page glow */
+    body::before {
+      content: "";
+      position: fixed;
+      top: -20%;
+      left: -20%;
+      width: 140%;
+      height: 140%;
+      pointer-events: none;
+      z-index: 0;
+
+      background: radial-gradient(circle at 30% 20%,
+          rgba(255, 255, 255, 0.04),
+          transparent 60%),
+        radial-gradient(circle at 80% 70%,
+          rgba(255, 255, 255, 0.03),
+          transparent 60%);
+    }
+
+    /* lift content above glow */
+    body>* {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ===== TOP BAR LIGHT ===== */
+    .top {
+      box-shadow:
+        0 0 15px rgba(168, 85, 247, 0.2),
+        0 1px 0 rgba(255, 255, 255, 0.06);
+      /* soft white edge */
+    }
+
+    /* ===== TABLE LIGHT ===== */
+    table {
+      box-shadow:
+        0 0 20px rgba(168, 85, 247, 0.15),
+        0 0 40px rgba(255, 255, 255, 0.02);
+      /* ambient white glow */
+    }
+
+    /* ===== BUTTON LIGHT ===== */
+    .box {
+      box-shadow:
+        0 0 8px rgba(168, 85, 247, 0.3),
+        0 0 10px rgba(255, 255, 255, 0.05);
+      /* soft white glow */
+    }
+
+    .box:hover {
+      box-shadow:
+        0 0 20px rgba(168, 85, 247, 0.7),
+        0 0 15px rgba(255, 255, 255, 0.08);
+    }
+
+    /* ===== MENU LIGHT ===== */
+    .menu {
+      box-shadow:
+        0 0 20px rgba(168, 85, 247, 0.4),
+        0 0 15px rgba(255, 255, 255, 0.05);
+    }
+
+    /* ===== FLASH LIGHT ===== */
+    .flash {
+      box-shadow:
+        0 0 12px rgba(168, 85, 247, 0.4),
+        0 0 10px rgba(255, 255, 255, 0.04);
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Arial', sans-serif;
+      background: #000;
+      /* pure black */
+      color: #e5e7eb;
+    }
+
+    /* ===== TOP BAR ===== */
+    .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+      flex-wrap: wrap;
+      gap: 10px;
+
+      background: #050505;
+      border-bottom: 1px solid #222;
+
+      box-shadow: 0 0 15px rgba(168, 85, 247, 0.2);
+    }
+
+    /* ===== BUTTON BOX ===== */
+    .box {
+      background: #0a0a0a;
+      padding: 10px 18px;
+      border-radius: 12px;
+
+      border: 1px solid rgba(168, 85, 247, 0.5);
+      cursor: pointer;
+
+      transition: 0.25s;
+      font-weight: bold;
+      color: #e5e7eb;
+
+      box-shadow: 0 0 8px rgba(168, 85, 247, 0.3);
+    }
+
+    .box:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px rgba(168, 85, 247, 0.7);
+      color: #fff;
+    }
+
+    /* ===== TABLE WRAPPER ===== */
+    .table-wrapper {
+      width: 100%;
+      overflow-x: auto;
+      padding: 5px;
+    }
+
+    /* ===== UNDER TABLE LIGHT GLOW ===== */
+
+    .table-wrapper {
+      position: relative;
+    }
+
+    /* glow source under table */
+    .table-wrapper::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: -15px;
+      transform: translateX(-50%);
+
+      width: 70%;
+      height: 60px;
+
+      pointer-events: none;
+      z-index: 0;
+
+      background: radial-gradient(ellipse at center,
+          rgba(255, 255, 255, 0.08),
+          rgba(255, 255, 255, 0.03) 40%,
+          transparent 70%);
+
+      filter: blur(20px);
+    }
+
+    /* keep table above glow */
+    table {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ===== TABLE ===== */
+    /* ===== TABLE STRUCTURE FIX ===== */
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 600px;
+      background: #0a0a0a;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 0 20px rgba(168, 85, 247, 0.15);
+
+      display: block;
+      /* important */
+    }
+
+    /* make header fixed */
+    thead,
+    tbody {
+      display: block;
+    }
+
+    /* scroll only body */
+    tbody {
+      max-height: 400px;
+      /* you can adjust */
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    /* keep header aligned */
+    thead tr {
+      display: table;
+      width: 100%;
+      table-layout: fixed;
+    }
+
+    tbody tr {
+      display: table;
+      width: 100%;
+      table-layout: fixed;
+    }
+
+    /* ===== TABLE CELLS ===== */
+    th,
+    td {
+      padding: 12px 15px;
+      border-bottom: 1px solid #1a1a1a;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    th {
+      background: #050505;
+      color: #a855f7;
+      font-weight: 600;
+    }
+
+    /* ===== ROW HOVER ===== */
+    tr:hover td {
+      background: rgba(168, 85, 247, 0.05);
+    }
+
+    /* ===== DOT MENU ===== */
+    .dots {
+      cursor: pointer;
+      font-size: 18px;
+      color: #a855f7;
+    }
+
+    /* ===== MENU FIXED ===== */
+    .menu {
+      display: none;
+      position: fixed;
+
+      background: #0a0a0a;
+      border-radius: 10px;
+
+      border: 1px solid rgba(168, 85, 247, 0.5);
+
+      box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
+
+      z-index: 99999;
+      /* FIX: always on top */
+      min-width: 140px;
+    }
+
+    .menu a {
+      display: block;
+      padding: 10px 15px;
+      color: #e5e7eb;
+      font-size: 14px;
+      transition: 0.2s;
+    }
+
+    .menu a:hover {
+      background: rgba(168, 85, 247, 0.15);
+      color: #a855f7;
+    }
+
+    /* ===== FLASH ===== */
+    .flash-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+    }
+
+    .flash {
+      background: #0a0a0a;
+      color: #e5e7eb;
+      padding: 12px 18px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      font-size: 14px;
+
+      border: 1px solid rgba(168, 85, 247, 0.4);
+
+      box-shadow: 0 0 12px rgba(168, 85, 247, 0.4);
+    }
+
+    /* ===== POPUPS ===== */
+    #popup div,
+    #duePopup div {
+      background: #0a0a0a !important;
+      border: 1px solid rgba(168, 85, 247, 0.6) !important;
+      box-shadow: 0 0 25px rgba(168, 85, 247, 0.5) !important;
+    }
+
+    /* ===== INPUT ===== */
+    input {
+      width: 100%;
+      background: #050505;
+      border: 1px solid rgba(168, 85, 247, 0.5);
+      color: #fff;
+
+      padding: 10px;
+      margin-top: 8px;
+      border-radius: 6px;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #a855f7;
+      box-shadow: 0 0 8px rgba(168, 85, 247, 0.6);
+    }
+
+    /* ===== BUTTON ===== */
+    button {
+      transition: 0.25s;
+    }
+
+    button:hover {
+      box-shadow: 0 0 10px rgba(168, 85, 247, 0.6);
+    }
+
+    /* ===== ANIMATION ===== */
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+      }
+
+      to {
+        transform: translateX(0);
+      }
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+
+      th,
+      td {
+        padding: 10px;
+        font-size: 14px;
+      }
+
+      .box {
+        flex: 1;
+      }
+    }
+
+    @media (max-width: 480px) {
+
+      .top {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .box {
+        width: 100%;
+      }
+
+      table {
+        min-width: 500px;
+      }
+    }
+
+    @media (max-width: 350px) {
+
+      th,
+      td {
+        font-size: 12px;
+        padding: 8px;
+      }
+
+      table {
+        min-width: 450px;
+      }
+    }
+
+    /* ===== GLOBAL SCROLLBAR (FULL FIX) ===== */
+
+    /* Chrome, Edge, Safari */
+    *::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    *::-webkit-scrollbar-track {
+      background: #050505;
+    }
+
+    *::-webkit-scrollbar-thumb {
+      background: rgba(168, 85, 247, 0.4);
+      border-radius: 10px;
+    }
+
+    *::-webkit-scrollbar-thumb:hover {
+      background: rgba(168, 85, 247, 0.7);
+    }
+
+    /* Firefox */
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(168, 85, 247, 0.4) #050505;
+    }
+
+
+    /* ===== BOTTOM EDGE GLOW ===== */
+
+    body::after {
+      content: "";
+      position: fixed;
+      bottom: -40px;
+      left: 50%;
+      transform: translateX(-50%);
+
+      width: 120%;
+      height: 120px;
+
+      pointer-events: none;
+      z-index: 0;
+
+      background: radial-gradient(ellipse at bottom,
+          rgba(255, 255, 255, 0.08),
+          rgba(168, 85, 247, 0.08) 40%,
+          transparent 70%);
+
+      filter: blur(35px);
+    }
+  </style>
+</head>
+
+<body>
+  {% with messages = get_flashed_messages() %}
+  {% if messages %}
+  <div class="flash-container">
+    {% for message in messages %}
+    <div class="flash">{{ message }}</div>
+    {% endfor %}
+  </div>
+  {% endif %}
+  {% endwith %}
+  {% if overdue_list %}
+  <div class="flash-container">
+    {% for item in overdue_list %}
+    <div class="flash">
+      ⚠️ Overdue: {{ item }}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+  {% if overdue_projects %}
+  {% for p in overdue_projects %}
+  <div style="
+            background: #c53d3d;
+            color: white;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 8px;
+        ">
+    ⚠️ <b>{{ p.title }}</b> is overdue!
+
+    <br>
+    Amount: {{ p.currency }} {{ p.amount }}
+
+    <br><br>
+
+    <a href="/dismiss_overdue/{{ p.id }}" style="color:white; font-weight:bold;">
+      ❌ Dismiss
+    </a>
+  </div>
+  {% endfor %}
+  {% endif %}
+  <div class="top">
+    <div class="box" onclick="location.href='/dashboard'">Dashboard</div>
+    <div class="box" onclick="location.href='/logout'">Logout</div>
+  </div>
+
+  <div class="table-wrapper">
+    <table>
+
+      <thead>
+        <tr>
+          <th>Client</th>
+          <th>Project</th>
+          <th>Amount</th>
+          <th>Status</th>
+          <th>Date</th>
+          <th></th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for p in projects %}
+        <tr>
+          <td>{{ p.client_name }}</td>
+          <td>{{ p.title }}</td>
+          <td>{{ p.currency }} {{ p.amount }}</td>
+          <td>{{ p.status }}</td>
+          <td>{{ p.date }}</td>
+          <td style="position: relative;">
+            <span class="dots" onclick="toggleMenu({{p.id}}, this)">⋮</span>
+
+            <div id="m{{p.id}}" class="menu">
+              <a href="/mark_paid/{{p.id}}">Mark Paid</a>
+              <a href="/delete_project/{{p.id}}">Delete</a>
+              <a href="/download_pdf/{{p.id}}">PDF</a>
+              <a href="/send_invoice/{{p.id}}">Send PDF</a>
+
+              {% if p.overdue_dismissed == False and p.due_date and p.status == "pending" %}
+              <a href="/dismiss_overdue/{{p.id}}">Dismiss Overdue</a>
+              {% endif %}
+
+              {% if user.plan == "pro" %}
+              <a href="#" onclick="openDuePopup({{p.id}}); return false;">Set Due Date</a>
+              {% endif %}
+            </div>
+
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+
+    </table>
+  </div>
+  <div id="duePopup" style="
+display:none;
+position:fixed;
+top:0; left:0;
+width:100%; height:100%;
+background:rgba(0,0,0,0.7);
+backdrop-filter: blur(6px);
+z-index:2000;
+">
+
+    <div style="
+  background: linear-gradient(135deg,#020617,#1e1e3a);
+  width:90%;
+  max-width:420px;
+  margin:120px auto;
+  padding:25px;
+  border-radius:16px;
+  border:1px solid #af80d5;
+  box-shadow:0 0 30px rgba(175,128,213,0.6);
+  animation: fadeIn 0.3s ease;
+  ">
+
+      <h3 style="margin-top:0; color:#af80d5;">
+        Smart Due Manager
+      </h3>
+
+      <p style="font-size:13px; color:#aaa;">
+        Set a due date & automate reminders + overdue alerts
+      </p>
+
+      <form method="POST" id="dueForm">
+
+        <input type="datetime-local" name="due_date" required style="
+      width:100%;
+      padding:10px;
+      margin-top:10px;
+      background:#020617;
+      border:1px solid #af80d5;
+      border-radius:8px;
+      color:#fff;
+      ">
+
+        <!-- ACTION BUTTONS -->
+        <div style="margin-top:20px; display:flex; gap:10px; flex-wrap:wrap;">
+
+          <button type="submit" style="
+        flex:1;
+        padding:10px;
+        background:#af80d5;
+        border:none;
+        border-radius:8px;
+        cursor:pointer;">
+            Save
+          </button>
+
+          <button type="button" onclick="dismissOverdue()" style="
+        flex:1;
+        padding:10px;
+        background:#ff4d4d;
+        border:none;
+        border-radius:8px;
+        cursor:pointer;">
+            Dismiss
+          </button>
+
+          <button type="button" onclick="closeDuePopup()" style="
+        width:100%;
+        padding:10px;
+        background:#d6d4d4;
+        border:none;
+        border-radius:8px;
+        cursor:pointer;">
+            Cancel
+          </button>
+
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+
+
+  </div>
+  </div>
+  <script>
+    let currentProjectId = null;
+
+    function openDuePopup(id) {
+      currentProjectId = id;
+      document.getElementById("duePopup").style.display = "block";
+      document.getElementById("dueForm").action = "/set_due_date/" + id;
+    }
+
+    function closeDuePopup() {
+      document.getElementById("duePopup").style.display = "none";
+    }
+
+    function dismissOverdue() {
+      if (currentProjectId) {
+        window.location.href = "/dismiss_overdue/" + currentProjectId;
+      }
+    }
+
+    // Toggle menu visibility
+    function toggleMenu(id, el) {
+      document.querySelectorAll(".menu").forEach(m => m.style.display = "none");
+
+      const menuDiv = document.getElementById("m" + id);
+      menuDiv.style.display = "block";
+
+      const rect = el.getBoundingClientRect();
+      const menuWidth = menuDiv.offsetWidth;
+      const menuHeight = menuDiv.offsetHeight;
+      const padding = 10;
+
+      let topPos = rect.bottom + window.scrollY;
+      let leftPos = rect.left + window.scrollX;
+
+      if (leftPos + menuWidth + padding > window.innerWidth) {
+        leftPos = window.innerWidth - menuWidth - padding;
+      }
+      if (leftPos < padding) leftPos = padding;
+
+      if (topPos + menuHeight + padding > window.innerHeight + window.scrollY) {
+        topPos = rect.top - menuHeight + window.scrollY;
+      }
+
+      menuDiv.style.left = leftPos + "px";
+      menuDiv.style.top = topPos + "px";
+    }
+
+    // Hide menus on click outside
+    document.addEventListener("click", (e) => {
+      if (!e.target.classList.contains("dots")) {
+        document.querySelectorAll(".menu").forEach(m => m.style.display = "none");
+      }
+    });
+
+    setTimeout(() => {
+      document.querySelectorAll('.flash').forEach(el => {
+        el.style.transition = "opacity 0.5s ease";
+        el.style.opacity = "0";
+
+        setTimeout(() => {
+          el.remove();
+        }, 500);
+      });
+    }, 2000); // ⏱️ stays for 2 seconds
+
+    function openPopup(id, client, title, amount, status) {
+      document.getElementById("popup").style.display = "block";
+
+      document.getElementById("uid").value = id;
+      document.getElementById("uclient").value = client;
+      document.getElementById("utitle").value = title;
+      document.getElementById("uamount").value = amount;
+      document.getElementById("ustatus").value = status;
+
+      document.getElementById("updateForm").action = "/update_project/" + id;
+    }
+
+    function closePopup() {
+      document.getElementById("popup").style.display = "none";
+
+
+
+
+setInterval(async () => {
+    try {
+        const res = await fetch("/get_overdue");
+        const data = await res.json();
+
+        if (data.data.length > 0) {
+          showOverduePopup(data.data);
+        }
+    } catch (err) {
+          console.log("Error fetching overdue");
+    }
+}, 5000); // every 5 sec
+  
+
+
+
+function showOverduePopup(list) {
+    const box = document.getElementById("overduePopup");
+    const content = document.getElementById("overdueContent");
+
+    content.innerHTML = "";
+
+    list.forEach(item => {
+        content.innerHTML += `
+            <div style="
+                margin-bottom:15px;
+                padding:12px;
+                border:1px solid #1f1f1f;
+                border-radius:12px;
+                background:#050505;
+                box-shadow:0 0 10px rgba(168,85,247,0.2);
+            ">
+                <b style="color:#a855f7;">Client:</b> ${item.name} <br>
+                <b style="color:#a855f7;">Project:</b> ${item.title} <br>
+                <b>Email:</b> ${item.email} <br>
+                <b>Amount:</b> ${item.amount} <br>
+
+                ${
+                    item.email_sent
+                    ? `<span style="color:#22c55e;">📧 Email sent successfully</span>`
+                    : `<span style="color:#facc15;">⏳ Email not sent yet</span>`
+                }
+            </div>
+        `;
+    });
+
+    box.style.display = "block";
+}
+
+  }
+  </script>
+  <!-- UPDATE POPUP -->
+  <div id="popup"
+    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:2000;">
+
+    <div
+      style="background:#020617; width:90%; max-width:400px; margin:100px auto; padding:20px; border-radius:12px; border:1px solid #af80d5; box-shadow:0 0 20px rgba(175,128,213,0.5);">
+
+      <h3 style="margin-top:0;">Update Client</h3>
+
+      <form method="POST" id="updateForm">
+        <input type="hidden" name="id" id="uid">
+
+        <input type="text" name="client_name" id="uclient" placeholder="Client Name" required>
+
+        <input type="email" name="email" id="uemail" placeholder="Client Email" required>
+
+        <input type="text" name="title" id="utitle" placeholder="Project Title" required>
+
+        <input type="number" name="amount" id="uamount" placeholder="Amount" required>
+
+        <input type="text" name="status" id="ustatus" placeholder="Status" required>
+        <button type="submit"
+          style="width:100%; padding:10px; background:#af80d5; border:none; border-radius:8px; cursor:pointer;">
+          Update
+        </button>
+
+        <button type="button" onclick="closePopup()"
+          style="width:100%; margin-top:10px; padding:10px; background:#444; border:none; border-radius:8px; cursor:pointer;">
+          Cancel
+        </button>
+      </form>
+
+    </div>
+  </div>
+  <div id="overduePopup" style="
+display:none;
+position:fixed;
+top:0; left:0;
+width:100%; height:100%;
+background:rgba(0,0,0,0.8);
+backdrop-filter: blur(8px);
+z-index:3000;
+">
+
+<div style="
+background:#0a0a0a;
+width:90%;
+max-width:420px;
+margin:120px auto;
+padding:25px;
+border-radius:16px;
+border:1px solid rgba(168,85,247,0.6);
+box-shadow:0 0 30px rgba(168,85,247,0.6);
+">
+
+<h3 style="color:#a855f7; margin-top:0;">
+⚠️ Payment Overdue
+</h3>
+
+<div id="overdueContent"></div>
+
+<button onclick="closeOverdue()" style="
+width:100%;
+margin-top:15px;
+padding:10px;
+background:#a855f7;
+border:none;
+border-radius:8px;
+cursor:pointer;
+">
+OK
+</button>
+
+</div>
+</div>
+</body>
+
+</html>
