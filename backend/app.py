@@ -5,6 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import random, smtplib
 from email.message import EmailMessage
 import io, os
+from reportlab.lib.enums import TA_RIGHT, TA_CENTER ,TA_LEFT
 from apscheduler.schedulers.background import BackgroundScheduler
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image
 from reportlab.lib.pagesizes import A4
@@ -12,6 +13,7 @@ from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.lib.styles import ParagraphStyle
 import stripe
 from datetime import datetime
 from flask import request
@@ -48,13 +50,14 @@ if uri:
     app.config['SQLALCHEMY_DATABASE_URI'] = uri
 else:
     # fallback for local testing
-    app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///database.db"
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv(
-    "",
-    "postgresql://USER:PASSWORD@HOST/DBNAME"
-)
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
+    db_url = os.getenv("DATABASE_URL")
+
+    if db_url:
+        db_url = db_url.replace("postgres://", "postgresql+psycopg2://")
+
+    app.config['SQLALCHEMY_DATABASE_URI'] = db_url
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    db = SQLAlchemy(app)
 
 # ---------------- MODELS ----------------
 class User(db.Model):
@@ -142,163 +145,124 @@ def generate_pdf(project, client, user):
     doc = SimpleDocTemplate(
         buffer,
         pagesize=A4,
-        rightMargin=50,
-        leftMargin=50,
+        rightMargin=40,
+        leftMargin=40,
         topMargin=40,
         bottomMargin=40
     )
 
-    styles = getSampleStyleSheet()
+    BRAND_BLUE = colors.HexColor("#1E40AF")  
+    BOX_LIGHT_BLUE = colors.HexColor("#EFF6FF")   
+    BOX_MEDIUM_BLUE = colors.HexColor("#DBEAFE")  
+    BOX_GREY = colors.HexColor("#F1F5F9")    
+    TEXT_DARK = colors.HexColor("#1E293B")   
+    TEXT_MUTED = colors.HexColor("#64748B")  
 
-    # ===== Typography System =====
-    title = ParagraphStyle(
-        name="Title",
-        fontName="DejaVu",
-        fontSize=22,
-        leading=26,
-        textColor=colors.white
-    )
-
-    subtitle = ParagraphStyle(
-        name="Subtitle",
-        fontName="DejaVu",
-        fontSize=10,
-        textColor=colors.white
-    )
-
-    normal = ParagraphStyle(
-        name="Normal",
-        fontName="DejaVu",
-        fontSize=11,
-        textColor=colors.HexColor("#111827"),
-        leading=16
-    )
-
-    label = ParagraphStyle(
-        name="Label",
-        fontName="DejaVu",
-        fontSize=9,
-        textColor=colors.HexColor("#6B7280")
-    )
+    style_brand = ParagraphStyle(name="Brand", fontSize=16, fontName="Helvetica-Bold", textColor=BRAND_BLUE)
+    style_label = ParagraphStyle(name="Label", fontSize=7, fontName="Helvetica-Bold", textColor=BRAND_BLUE)
+    style_value = ParagraphStyle(name="Value", fontSize=10, fontName="Helvetica", textColor=TEXT_DARK)
+    style_notice = ParagraphStyle(name="Notice", fontSize=8, fontName="Helvetica-Bold", textColor=BRAND_BLUE, alignment=TA_RIGHT)
+    style_paid_status = ParagraphStyle(name="PaidStatus", fontSize=10, fontName="Helvetica-Bold", textColor=TEXT_DARK)
+    style_status_col = ParagraphStyle(name="StatusCol", fontSize=10, fontName="Helvetica-Bold", textColor=TEXT_MUTED)
+    style_amount = ParagraphStyle(name="Amount", fontSize=18, fontName="Helvetica-Bold", textColor=BRAND_BLUE, alignment=TA_RIGHT)
 
     elements = []
 
-    # =========================
-    # 🔷 HERO HEADER (WOW PART)
-    # =========================
+    # ================= HEADER =================
     header = Table([
         [
-            Paragraph(f"<b>{user.name}</b><br/>{user.email}", subtitle),
-            Paragraph("<b>INVOICE</b>", title)
+            Paragraph("PLEXIS", style_brand),
+            Paragraph("INVOICE", ParagraphStyle(name="T", fontSize=20, fontName="Helvetica-Bold", alignment=TA_RIGHT, textColor=TEXT_DARK))
         ]
-    ], colWidths=[280, 200])
-
-    header.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor("#0F172A")),
-        ('TEXTCOLOR', (0,0), (-1,-1), colors.white),
-        ('ALIGN', (1,0), (1,0), 'RIGHT'),
-        ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 20),
-        ('TOPPADDING', (0,0), (-1,-1), 20),
-    ]))
+    ], colWidths=[250, 260])
 
     elements.append(header)
-    elements.append(Spacer(1, 30))
-
-    # =========================
-    # 📄 META (CLEAN GRID)
-    # =========================
-    meta = Table([
-        ["Invoice ID", project.invoice_id],
-        ["Issued", project.date.strftime("%d %b %Y")],
-        ["Status", project.status.upper()]
-    ], colWidths=[120, 320])
-
-    meta.setStyle(TableStyle([
-        ('TEXTCOLOR', (0,0), (-1,-1), colors.HexColor("#374151")),
-        ('FONTNAME', (0,0), (-1,-1), 'DejaVu'),
-        ('LINEBELOW', (0,0), (-1,-2), 0.3, colors.lightgrey),
-        ('PADDING', (0,0), (-1,-1), 8),
-    ]))
-
-    elements.append(meta)
-    elements.append(Spacer(1, 30))
-
-    # =========================
-    # 👤 BILL TO (MODERN CARD)
-    # =========================
-    elements.append(Paragraph("BILL TO", label))
-    elements.append(Spacer(1, 6))
-
-    bill = Table([
-        [Paragraph(f"<b>{client.name}</b><br/>{client.email}", normal)]
-    ], colWidths=[440])
-
-    bill.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor("#F8FAFC")),
-        ('BOX', (0,0), (-1,-1), 0.5, colors.lightgrey),
-        ('PADDING', (0,0), (-1,-1), 14),
-    ]))
-
-    elements.append(bill)
-    elements.append(Spacer(1, 30))
-
-    # =========================
-    # 📦 ITEMS TABLE (HIGH-END LOOK)
-    # =========================
-    data = [
-        ["DESCRIPTION", "STATUS", "AMOUNT"],
-        [project.title, project.status, f"{project.currency} {project.amount}"]
-    ]
-
-    table = Table(data, colWidths=[240, 100, 100])
-
-    table.setStyle(TableStyle([
-        # Header
-        ('BACKGROUND', (0,0), (-1,0), colors.HexColor("#111827")),
-        ('TEXTCOLOR', (0,0), (-1,0), colors.white),
-        ('FONTNAME', (0,0), (-1,0), 'DejaVu'),
-        ('PADDING', (0,0), (-1,0), 12),
-
-        # Body
-        ('BACKGROUND', (0,1), (-1,-1), colors.white),
-        ('FONTNAME', (0,1), (-1,-1), 'DejaVu'),
-        ('PADDING', (0,1), (-1,-1), 12),
-
-        # Clean lines
-        ('LINEBELOW', (0,0), (-1,0), 0.5, colors.grey),
-        ('LINEBELOW', (0,1), (-1,-1), 0.2, colors.lightgrey),
-
-        ('ALIGN', (2,1), (2,1), 'RIGHT'),
-    ]))
-
-    elements.append(table)
     elements.append(Spacer(1, 25))
 
-    # =========================
-    # 💰 TOTAL (PREMIUM HIGHLIGHT)
-    # =========================
-    total = Table([
-        ["TOTAL", f"{project.currency} {project.amount}"]
-    ], colWidths=[300, 140])
+    # ================= INVOICE BOX =================
+    inv_data = [
+        [Paragraph("INVOICE ID", style_label), Paragraph("DATE", style_label), Paragraph("STATUS", style_label)],
+        [
+            Paragraph(project.invoice_id, style_value),
+            Paragraph(project.date.strftime("%d %b %Y"), style_value),
+            Paragraph(project.status.upper(), style_paid_status)
+        ]
+    ]
 
-    total.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor("#111827")),
-        ('TEXTCOLOR', (0,0), (-1,-1), colors.white),
-        ('FONTNAME', (0,0), (-1,-1), 'DejaVu'),
-        ('PADDING', (0,0), (-1,-1), 14),
-        ('ALIGN', (1,0), (1,0), 'RIGHT'),
+    inv_box = Table(inv_data, colWidths=[170, 170, 170])
+    inv_box.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,-1), BOX_LIGHT_BLUE),
+        ('BOX', (0,0), (-1,-1), 1, BRAND_BLUE),
+        ('TOPPADDING', (0,0), (-1,-1), 12),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 12),
     ]))
 
-    elements.append(total)
-    elements.append(Spacer(1, 40))
+    elements.append(inv_box)
+    elements.append(Spacer(1, 15))
 
-    # =========================
-    # 🔚 FOOTER (TRUST BUILDER)
-    # =========================
+    # ================= CLIENT BOX (FIXED HERE) =================
+    client_data = [
+        [Paragraph("BILLED TO", style_label)],
+        [Paragraph(f"<b>{client.name}</b>", style_value)],
+        [Paragraph(client.email, style_value)]
+    ]
+
+    client_box = Table(client_data, colWidths=[510])
+    client_box.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,-1), BOX_GREY),
+        ('BOX', (0,0), (-1,-1), 1, BRAND_BLUE),
+        ('TOPPADDING', (0,0), (-1,-1), 10),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 10),
+    ]))
+
+    elements.append(client_box)
+    elements.append(Spacer(1, 30))
+
+    # ================= ITEMS =================
+    items_data = [
+        [Paragraph("DESCRIPTION", style_label), Paragraph("STATUS", style_label), Paragraph("AMOUNT", style_label)],
+        [
+            Paragraph(project.title, style_value),
+            Paragraph(project.status.upper(), style_status_col),
+            Paragraph(f"<b>{project.currency} {project.amount}</b>", style_value)
+        ]
+    ]
+
+    items_table = Table(items_data, colWidths=[300, 100, 110])
+    items_table.setStyle(TableStyle([
+        ('LINEBELOW', (0,0), (-1,0), 1, BOX_MEDIUM_BLUE),
+        ('LINEBELOW', (0,1), (-1,1), 1.5, BRAND_BLUE),
+        ('ALIGN', (2,0), (2,-1), 'RIGHT'),
+    ]))
+
+    elements.append(items_table)
+    elements.append(Spacer(1, 30))
+
+    # ================= TOTAL =================
+    total_data = [
+        [Paragraph("TOTAL AMOUNT DUE", style_label), Paragraph(f"{project.currency} {project.amount}", style_amount)],
+        ["", Paragraph("IMMEDIATE PAYMENT REQUIRED", style_notice)]
+    ]
+
+    total_box = Table(total_data, colWidths=[330, 180])
+    total_box.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,-1), BOX_MEDIUM_BLUE),
+        ('BOX', (0,0), (-1,-1), 1, BRAND_BLUE),
+    ]))
+
+    elements.append(total_box)
+
+    # ================= FOOTER =================
+    elements.append(Spacer(1, 60))
+
+    footer_text = f"""
+    Questions? Contact: {user.email}<br/>
+    Generated by Plexis • Professional • Trusted
+    """
+
     footer = Paragraph(
-        "<font size=9 color='#6B7280'>Generated by <b>Plexis</b> • Fast • Secure • Professional</font>",
-        normal
+        footer_text,
+        ParagraphStyle(name="F", alignment=TA_CENTER, fontSize=8, textColor=TEXT_MUTED)
     )
 
     elements.append(footer)
