@@ -1,3 +1,5 @@
+
+import threading
 from flask import Flask, render_template, request, redirect, session, flash, send_file
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timedelta
@@ -671,6 +673,20 @@ def download_pdf(id):
     return send_file(pdf, as_attachment=True, download_name="invoice.pdf")
 
 # ---------------- EMAIL ----------------
+
+def send_email_async(msg):
+    try:
+        server = smtplib.SMTP('smtp.gmail.com', 587, timeout=10)
+        server.starttls()
+        server.login(APP_EMAIL, APP_PASSWORD)
+        server.send_message(msg)
+        server.quit()
+    except Exception as e:
+        print("EMAIL ERROR:", e)
+
+
+
+
 @app.route("/send_invoice/<int:id>")
 def send_invoice(id):
     user = User.query.get(session['user_id'])
@@ -816,7 +832,10 @@ def send_invoice(id):
         user.emails_sent += 1
         db.session.commit()
 
-        flash("Invoice sent successfully")
+         threading.Thread(target=send_email_async, args=(msg,)).start()
+
+        flash("Invoice sending started 🚀")
+        
 
     except Exception as e:
         print("EMAIL ERROR:", e)
