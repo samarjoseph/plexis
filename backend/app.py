@@ -700,147 +700,139 @@ def send_invoice(id):
 
     pdf = generate_pdf(project, client, user)
 
-    try:
-        msg = EmailMessage()
 
-        msg['Subject'] = f"📄 Invoice from {user.name}"
-        msg['From'] = APP_EMAIL
-        msg['To'] = client.email
+    msg = EmailMessage()
 
-        # 🔥 reply goes to user
-        msg['Reply-To'] = user.email
+    msg['Subject'] = f"📄 Invoice from {user.name}"
+    msg['From'] = APP_EMAIL
+    msg['To'] = client.email
 
-        html_content = f"""
-        <html>
-        <head>
-            <style>
-                body {{
-                    font-family: Arial, sans-serif;
-                    background-color: #f4f6f8;
-                    padding: 20px;
-                }}
-                .container {{
-                    max-width: 600px;
-                    margin: auto;
-                    background: white;
-                    border-radius: 10px;
-                    padding: 20px;
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-                }}
-                .header {{
-                    text-align: center;
-                    font-size: 22px;
-                    font-weight: bold;
-                    color: #1e3a8a;
-                    margin-bottom: 20px;
-                }}
-                .section {{
-                    margin-bottom: 15px;
-                }}
-                .label {{
-                    font-weight: bold;
-                }}
-                .amount {{
-                    font-size: 20px;
-                    color: green;
-                    font-weight: bold;
-                }}
-                .footer {{
-                    margin-top: 20px;
-                    font-size: 12px;
-                    color: #666;
-                    text-align: center;
-                }}
-            </style>
-        </head>
+    # 🔥 reply goes to user
+    msg['Reply-To'] = user.email
 
-        <body>
-            <div class="container">
+    html_content = f"""
+    <html>
+    <head>
+        <style>
+            body {{
+                font-family: Arial, sans-serif;
+                background-color: #f4f6f8;
+                padding: 20px;
+            }}
+            .container {{
+                max-width: 600px;
+                margin: auto;
+                background: white;
+                border-radius: 10px;
+                padding: 20px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            }}
+            .header {{
+                text-align: center;
+                font-size: 22px;
+                font-weight: bold;
+                color: #1e3a8a;
+                margin-bottom: 20px;
+            }}
+            .section {{
+                margin-bottom: 15px;
+            }}
+            .label {{
+                font-weight: bold;
+            }}
+            .amount {{
+                font-size: 20px;
+                color: green;
+                font-weight: bold;
+            }}
+            .footer {{
+                margin-top: 20px;
+                font-size: 12px;
+                color: #666;
+                text-align: center;
+            }}
+        </style>
+    </head>
 
-                <div class="header">
-                    📄 Invoice
-                </div>
+    <body>
+        <div class="container">
 
-                <div class="section">
-                    Hello <b>{client.name}</b>,
-                </div>
-
-                <div class="section">
-                    <b>{user.name}</b> has sent you an invoice for the following project:
-                </div>
-
-                <div class="section">
-                    <span class="label">📁 Project:</span> {project.title}
-                </div>
-
-                <div class="section">
-                    <span class="label">💰 Amount:</span> 
-                    <span class="amount">{project.currency} {project.amount}</span>
-                </div>
-
-                <div class="section">
-                    📎 The invoice PDF is attached to this email.
-                </div>
-
-                <div class="section">
-                    <span class="label">📧 Contact:</span> 
-                    <a href="mailto:{user.email}">{user.email}</a>
-                </div>
-
-                <div class="section">
-                    💬 You can reply directly to this email to contact {user.name}.
-                </div>
-
-                <div class="footer">
-                    This invoice was sent via <b>Plexis</b> 🚀 <br>
-                    Secure • Professional • Trusted
-                </div>
-
+            <div class="header">
+                📄 Invoice
             </div>
-        </body>
-        </html>
-        """
 
-        # fallback text (important)
-        msg.set_content(f"""
-    Invoice from {user.name}
+            <div class="section">
+                Hello <b>{client.name}</b>,
+            </div>
 
-    Project: {project.title}
-    Amount: {project.currency} {project.amount}
+            <div class="section">
+                <b>{user.name}</b> has sent you an invoice for the following project:
+            </div>
 
-    PDF attached.
+            <div class="section">
+                <span class="label">📁 Project:</span> {project.title}
+            </div>
 
-    Contact: {user.email}
-    """)
+            <div class="section">
+                <span class="label">💰 Amount:</span> 
+                <span class="amount">{project.currency} {project.amount}</span>
+            </div>
 
-        msg.add_alternative(html_content, subtype='html')
+            <div class="section">
+                📎 The invoice PDF is attached to this email.
+            </div>
 
-        # attach pdf
-        msg.add_attachment(
-            pdf.read(),
-            maintype='application',
-            subtype='pdf',
-            filename="invoice.pdf"
-        )
+            <div class="section">
+                <span class="label">📧 Contact:</span> 
+                <a href="mailto:{user.email}">{user.email}</a>
+            </div>
 
-        server = smtplib.SMTP('smtp.gmail.com',587)
-        server.starttls()
-        server.login(APP_EMAIL, APP_PASSWORD)
-        server.send_message(msg)
-        server.quit()
+            <div class="section">
+                💬 You can reply directly to this email to contact {user.name}.
+            </div>
 
-        user.emails_sent += 1
-        db.session.commit()
+            <div class="footer">
+                This invoice was sent via <b>Plexis</b> 🚀 <br>
+                Secure • Professional • Trusted
+            </div>
 
-         threading.Thread(target=send_email_async, args=(msg,)).start()
+        </div>
+    </body>
+    </html>
+    """
 
-        flash("Invoice sending started 🚀")
-        
+    # fallback text (important)
+    msg.set_content(f"""
+Invoice from {user.name}
 
-    except Exception as e:
-        print("EMAIL ERROR:", e)
-        flash("Email failed: " + str(e))
+Project: {project.title}
+Amount: {project.currency} {project.amount}
 
+PDF attached.
+
+Contact: {user.email}
+""")
+
+    msg.add_alternative(html_content, subtype='html')
+
+    # attach pdf
+    msg.add_attachment(
+        pdf.read(),
+        maintype='application',
+        subtype='pdf',
+        filename="invoice.pdf"
+    )
+
+    
+    threading.Thread(target=send_email_async, args=(msg,)).start()
+
+    user.emails_sent += 1
+    db.session.commit()
+
+    
+
+
+    flash("Invoice sending started 🚀")
     return redirect("/clients")
 
 # ---------------- PLANS ----------------
