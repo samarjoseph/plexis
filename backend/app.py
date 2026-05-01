@@ -885,7 +885,7 @@ def create_checkout(plan):
         'quantity': 1,
     }],
 
-        success_url=f"{BASE_URL}/success"
+        success_url=f"{BASE_URL}/success",
         cancel_url=f"{BASE_URL}/cancel"
 )
     return redirect(session_stripe.url)
