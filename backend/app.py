@@ -59,6 +59,9 @@ else:
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
+
+
+BASE_URL = os.getenv("BASE_URL")
 # ---------------- MODELS ----------------
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -815,8 +818,9 @@ def send_invoice(id):
 
         flash("Invoice sent successfully")
 
-    except:
-        flash("Email failed")
+    except Exception as e:
+        print("EMAIL ERROR:", e)
+        flash("Email failed: " + str(e))
 
     return redirect("/clients")
 
@@ -881,8 +885,8 @@ def create_checkout(plan):
         'quantity': 1,
     }],
 
-    success_url="http://127.0.0.1:5000/success?session_id={CHECKOUT_SESSION_ID}",
-    cancel_url="http://127.0.0.1:5000/plans",
+        success_url=f"{BASE_URL}/success"
+        cancel_url=f"{BASE_URL}/cancel"
 )
     return redirect(session_stripe.url)
 
@@ -1238,7 +1242,7 @@ scheduler = BackgroundScheduler()
 scheduler.add_job(
     func=check_overdue_jobs,
     trigger="interval",
-    seconds=5,
+    seconds=30,
     max_instances=1,
     coalesce=True
 )
